@@ -1,0 +1,1809 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;700;800&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #0d1117;
+  --green: #00ff88;
+  --green-dim: #00c864;
+  --green-dark: #003d1f;
+  --amber: #ffb700;
+  --blue: #4fc3f7;
+  --red: #ff5252;
+  --purple: #ce93d8;
+  --surface: #161b22;
+  --surface2: #1c2128;
+  --surface3: #21262d;
+  --border: rgba(0,255,136,0.15);
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Syne', sans-serif;
+}
+
+body { background: transparent; font-family: var(--font-mono); color: var(--text); }
+
+.app {
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 600px;
+}
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dots { display: flex; gap: 6px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot-r { background: #ff5f57; }
+.dot-y { background: #febc2e; }
+.dot-g { background: #28c840; }
+
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.topbar-subtitle { font-size: 11px; color: var(--muted); margin-left: auto; }
+
+.layout { display: flex; height: calc(100% - 48px); }
+
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 12px 0;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-section-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  padding: 8px 16px 4px;
+  text-transform: uppercase;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--muted);
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: var(--surface3); color: var(--green); border-left-color: var(--green); }
+
+.nav-icon { font-size: 12px; width: 14px; text-align: center; }
+
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--black);
+}
+
+.content-area::-webkit-scrollbar { width: 4px; }
+.content-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.panel { display: none; padding: 24px; }
+.panel.active { display: block; }
+
+.panel-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-tag {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--green-dim);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.panel-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.panel-desc { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.7; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-body { font-size: 12px; color: var(--text); line-height: 1.8; }
+
+.terminal {
+  background: #010409;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  font-family: var(--font-mono);
+}
+
+.term-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.term-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+
+.term-line { font-size: 11px; line-height: 1.8; }
+.prompt { color: var(--green); }
+.cmd { color: var(--text); }
+.output { color: var(--muted); }
+.hl-blue { color: var(--blue); }
+.hl-amber { color: var(--amber); }
+.hl-red { color: var(--red); }
+.hl-purple { color: var(--purple); }
+.hl-green { color: var(--green); }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+.badge {
+  display: inline-block;
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.badge-green { background: var(--green-dark); color: var(--green); }
+.badge-amber { background: rgba(255,183,0,0.1); color: var(--amber); }
+.badge-blue { background: rgba(79,195,247,0.1); color: var(--blue); }
+.badge-red { background: rgba(255,82,82,0.1); color: var(--red); }
+.badge-purple { background: rgba(206,147,216,0.1); color: var(--purple); }
+
+.checkpoint {
+  background: var(--green-dark);
+  border: 1px solid var(--green-dim);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.checkpoint-title {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+
+.quiz-q { font-size: 12px; color: var(--text); margin-bottom: 8px; line-height: 1.6; }
+
+.quiz-opts { display: flex; flex-direction: column; gap: 6px; }
+
+.quiz-opt {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.quiz-opt:hover { border-color: var(--green-dim); color: var(--text); }
+.quiz-opt.correct { border-color: var(--green); color: var(--green); background: var(--green-dark); }
+.quiz-opt.wrong { border-color: var(--red); color: var(--red); background: rgba(255,82,82,0.1); }
+
+.cmd-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.cmd-table th { text-align: left; color: var(--green-dim); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.cmd-table td { padding: 8px 8px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: top; }
+.cmd-table tr:hover td { background: var(--surface); }
+.cmd-cell { color: var(--green); font-weight: 500; font-family: var(--font-mono); }
+.desc-cell { color: var(--muted); line-height: 1.5; }
+
+.progress-bar {
+  background: var(--surface2);
+  border-radius: 4px;
+  height: 4px;
+  margin: 4px 0;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-dim), var(--green));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.timeline {
+  border-left: 2px solid var(--border);
+  margin-left: 8px;
+  padding-left: 20px;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -27px;
+  top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--green-dim);
+  background: var(--black);
+}
+
+.timeline-year { font-size: 10px; color: var(--green-dim); margin-bottom: 4px; }
+.timeline-event { font-size: 12px; color: var(--text); line-height: 1.6; }
+.timeline-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.filesystem-tree { font-family: var(--font-mono); font-size: 12px; line-height: 2; }
+.tree-item { cursor: pointer; }
+.tree-item:hover .tree-name { color: var(--green); }
+.tree-root { color: var(--green); font-weight: 700; font-size: 14px; }
+.tree-dir { color: var(--blue); }
+.tree-name { color: var(--amber); }
+.tree-desc { color: var(--muted); font-size: 10px; margin-left: 12px; }
+
+.week-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.week-num {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.week-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--amber);
+  margin-bottom: 8px;
+}
+
+.week-tasks { font-size: 11px; color: var(--text); line-height: 2; }
+.week-task::before { content: "▸ "; color: var(--green-dim); }
+
+.resource-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.resource-icon { font-size: 16px; margin-top: 1px; }
+.resource-name { font-size: 12px; color: var(--text); font-weight: 500; }
+.resource-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+
+.tab {
+  font-size: 11px;
+  padding: 8px 14px;
+  cursor: pointer;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.interactive-cmd {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.cmd-input {
+  flex: 1;
+  background: #010409;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--green);
+  outline: none;
+}
+
+.cmd-input::placeholder { color: var(--muted); }
+.cmd-input:focus { border-color: var(--green-dim); }
+
+.run-btn {
+  background: var(--green-dark);
+  border: 1px solid var(--green-dim);
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--green);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.run-btn:hover { background: rgba(0,200,100,0.2); }
+
+.term-output-box {
+  background: #010409;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 11px;
+  min-height: 60px;
+  color: var(--muted);
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+</style>
+
+<h2 style="position: absolute; width: 1px; height: 1px; overflow: hidden;">Linux Mastery: Complete Interactive Learning Platform — covers history, commands, scripting, admin, DevOps and more</h2>
+
+<div class="app">
+  <div class="topbar">
+    <div class="dots">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+    </div>
+    <div class="topbar-title">Linux Mastery</div>
+    <div class="topbar-subtitle">root@linux-mastery:~ $</div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-section-label">Fundamentals</div>
+      <div class="nav-item active" onclick="showPanel('intro')">
+        <span class="nav-icon">▸</span> What is Linux?
+      </div>
+      <div class="nav-item" onclick="showPanel('history')">
+        <span class="nav-icon">▸</span> History & Evolution
+      </div>
+      <div class="nav-item" onclick="showPanel('architecture')">
+        <span class="nav-icon">▸</span> Linux Architecture
+      </div>
+
+      <div class="sidebar-section-label">Core Concepts</div>
+      <div class="nav-item" onclick="showPanel('filesystem')">
+        <span class="nav-icon">▸</span> Filesystem Hierarchy
+      </div>
+      <div class="nav-item" onclick="showPanel('commands')">
+        <span class="nav-icon">▸</span> Essential Commands
+      </div>
+      <div class="nav-item" onclick="showPanel('permissions')">
+        <span class="nav-icon">▸</span> Permissions & Users
+      </div>
+      <div class="nav-item" onclick="showPanel('packages')">
+        <span class="nav-icon">▸</span> Package Management
+      </div>
+
+      <div class="sidebar-section-label">Intermediate</div>
+      <div class="nav-item" onclick="showPanel('scripting')">
+        <span class="nav-icon">▸</span> Shell Scripting
+      </div>
+      <div class="nav-item" onclick="showPanel('processes')">
+        <span class="nav-icon">▸</span> Process Management
+      </div>
+      <div class="nav-item" onclick="showPanel('networking')">
+        <span class="nav-icon">▸</span> Networking Basics
+      </div>
+      <div class="nav-item" onclick="showPanel('disks')">
+        <span class="nav-icon">▸</span> Disk & Monitoring
+      </div>
+
+      <div class="sidebar-section-label">Advanced</div>
+      <div class="nav-item" onclick="showPanel('sysadmin')">
+        <span class="nav-icon">▸</span> System Administration
+      </div>
+      <div class="nav-item" onclick="showPanel('security')">
+        <span class="nav-icon">▸</span> Security & SSH
+      </div>
+      <div class="nav-item" onclick="showPanel('docker')">
+        <span class="nav-icon">▸</span> Docker & Containers
+      </div>
+
+      <div class="sidebar-section-label">Real World</div>
+      <div class="nav-item" onclick="showPanel('cloud')">
+        <span class="nav-icon">▸</span> Cloud & DevOps
+      </div>
+      <div class="nav-item" onclick="showPanel('ai')">
+        <span class="nav-icon">▸</span> Linux in AI/ML
+      </div>
+
+      <div class="sidebar-section-label">Learning Path</div>
+      <div class="nav-item" onclick="showPanel('roadmap')">
+        <span class="nav-icon">▸</span> Study Roadmap
+      </div>
+      <div class="nav-item" onclick="showPanel('resources')">
+        <span class="nav-icon">▸</span> Resources
+      </div>
+      <div class="nav-item" onclick="showPanel('playground')">
+        <span class="nav-icon">▸</span> Command Playground
+      </div>
+    </div>
+
+    <div class="content-area">
+
+      <!-- INTRO PANEL -->
+      <div class="panel active" id="panel-intro">
+        <div class="panel-header">
+          <div class="panel-tag">Module 01 · Fundamentals</div>
+          <div class="panel-title">What is Linux?</div>
+          <div class="panel-desc">A free, open-source, Unix-like operating system kernel created by Linus Torvalds in 1991. Today it powers 96% of the world's top 1 million web servers, all of the world's top 500 supercomputers, Android phones, and cloud infrastructure.</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">🐧 Linux vs Windows vs macOS</div>
+            <div class="card-body">
+              <table class="cmd-table">
+                <tr><th>Feature</th><th>Linux</th><th>Windows</th></tr>
+                <tr><td class="desc-cell">Cost</td><td><span class="badge badge-green">Free</span></td><td><span class="badge badge-red">Paid</span></td></tr>
+                <tr><td class="desc-cell">Source</td><td><span class="badge badge-green">Open</span></td><td><span class="badge badge-amber">Closed</span></td></tr>
+                <tr><td class="desc-cell">Security</td><td><span class="badge badge-green">High</span></td><td><span class="badge badge-amber">Medium</span></td></tr>
+                <tr><td class="desc-cell">Server use</td><td><span class="badge badge-green">96%</span></td><td><span class="badge badge-amber">~3%</span></td></tr>
+                <tr><td class="desc-cell">Customizable</td><td><span class="badge badge-green">Fully</span></td><td><span class="badge badge-red">Limited</span></td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">🌍 Where Linux Runs Today</div>
+            <div class="card-body" style="line-height:2.2; font-size:11px;">
+              <div><span class="hl-green">▸</span> <span class="hl-amber">96%</span> of web servers worldwide</div>
+              <div><span class="hl-green">▸</span> <span class="hl-amber">100%</span> of world's top 500 supercomputers</div>
+              <div><span class="hl-green">▸</span> <span class="hl-amber">~73%</span> of all smartphones (Android)</div>
+              <div><span class="hl-green">▸</span> <span class="hl-amber">AWS, GCP, Azure</span> cloud infrastructure</div>
+              <div><span class="hl-green">▸</span> <span class="hl-amber">IoT devices</span> — routers, smart TVs</div>
+              <div><span class="hl-green">▸</span> <span class="hl-amber">NASA, CERN, Tesla</span> systems</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📦 Linux Distributions (Distros)</div>
+          <div class="card-body">
+            <p style="margin-bottom:12px; font-size:12px; color:var(--muted);">Linux kernel + tools + package manager + UI = a "distribution". Different distros suit different needs:</p>
+            <div class="grid-3">
+              <div style="background:var(--surface2); border-radius:6px; padding:10px;">
+                <div style="color:var(--amber); font-size:11px; font-weight:700; margin-bottom:4px;">Ubuntu / Debian</div>
+                <div style="color:var(--muted); font-size:10px;">Beginner-friendly · apt package manager · Most popular for servers & learning</div>
+              </div>
+              <div style="background:var(--surface2); border-radius:6px; padding:10px;">
+                <div style="color:var(--blue); font-size:11px; font-weight:700; margin-bottom:4px;">CentOS / RHEL / Fedora</div>
+                <div style="color:var(--muted); font-size:10px;">Enterprise-grade · yum/dnf · Used heavily in corporate/govt environments</div>
+              </div>
+              <div style="background:var(--surface2); border-radius:6px; padding:10px;">
+                <div style="color:var(--purple); font-size:11px; font-weight:700; margin-bottom:4px;">Arch / Manjaro</div>
+                <div style="color:var(--muted); font-size:10px;">Advanced users · Rolling release · Cutting-edge packages</div>
+              </div>
+              <div style="background:var(--surface2); border-radius:6px; padding:10px;">
+                <div style="color:var(--green); font-size:11px; font-weight:700; margin-bottom:4px;">Kali Linux</div>
+                <div style="color:var(--muted); font-size:10px;">Cybersecurity & penetration testing · 600+ hacking tools</div>
+              </div>
+              <div style="background:var(--surface2); border-radius:6px; padding:10px;">
+                <div style="color:var(--red); font-size:11px; font-weight:700; margin-bottom:4px;">Alpine Linux</div>
+                <div style="color:var(--muted); font-size:10px;">Ultra-lightweight (5MB!) · Used in Docker containers</div>
+              </div>
+              <div style="background:var(--surface2); border-radius:6px; padding:10px;">
+                <div style="color:var(--amber); font-size:11px; font-weight:700; margin-bottom:4px;">Linux Mint</div>
+                <div style="color:var(--muted); font-size:10px;">Best for Windows migrants · User-friendly GUI</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="checkpoint">
+          <div class="checkpoint-title">✦ CHECKPOINT — Test Your Knowledge</div>
+          <div class="quiz-q">Q: Which package manager does Ubuntu/Debian use?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="checkAnswer(this, false)">A. yum</button>
+            <button class="quiz-opt" onclick="checkAnswer(this, true)">B. apt</button>
+            <button class="quiz-opt" onclick="checkAnswer(this, false)">C. dnf</button>
+            <button class="quiz-opt" onclick="checkAnswer(this, false)">D. pacman</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTORY PANEL -->
+      <div class="panel" id="panel-history">
+        <div class="panel-header">
+          <div class="panel-tag">Module 01 · Fundamentals</div>
+          <div class="panel-title">History & Evolution of Linux</div>
+          <div class="panel-desc">From a student's hobby project to powering the entire internet — the most important software story of the 20th century.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📅 Timeline of Linux</div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">1969 — UNIX Born</div>
+                <div class="timeline-event">Ken Thompson & Dennis Ritchie create UNIX at AT&T Bell Labs.</div>
+                <div class="timeline-detail">Written in C — the first truly portable OS. Foundation for everything.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">1983 — GNU Project</div>
+                <div class="timeline-event">Richard Stallman launches GNU (GNU's Not Unix) — free software OS.</div>
+                <div class="timeline-detail">Creates essential tools (gcc, bash, etc.) but kernel missing.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">1991 — Linux Kernel Born</div>
+                <div class="timeline-event">Linus Torvalds (21-year-old Finnish student) posts to Usenet: "I'm doing a (free) operating system..."</div>
+                <div class="timeline-detail">Linux kernel version 0.01 — 10,239 lines of code.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">1994 — Linux 1.0</div>
+                <div class="timeline-event">First stable release. 176,250 lines of code. GPL licensed.</div>
+                <div class="timeline-detail">Community of developers worldwide begins contributing.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">2003 — Enterprise Adoption</div>
+                <div class="timeline-event">Red Hat Enterprise Linux, IBM begins supporting Linux on mainframes.</div>
+                <div class="timeline-detail">Google, Amazon start building on Linux. Web era ignites.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">2008 — Android</div>
+                <div class="timeline-event">Google releases Android — built on the Linux kernel.</div>
+                <div class="timeline-detail">Linux now in every pocket on the planet.</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">2024 — Linux Today</div>
+                <div class="timeline-event">Linux kernel 6.x — 30+ million lines of code. 4,000+ developers.</div>
+                <div class="timeline-detail">Powers AWS, GCP, Azure, all supercomputers, AI training clusters.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔀 Linux vs Unix — Key Differences</div>
+          <div class="card-body">
+            <table class="cmd-table">
+              <tr><th>Aspect</th><th>Unix</th><th>Linux</th></tr>
+              <tr><td class="desc-cell">Created</td><td class="cmd-cell">1969 (Bell Labs)</td><td class="cmd-cell">1991 (Torvalds)</td></tr>
+              <tr><td class="desc-cell">License</td><td class="cmd-cell">Proprietary (mostly)</td><td class="cmd-cell">GPL — Free & Open</td></tr>
+              <tr><td class="desc-cell">Cost</td><td class="desc-cell">Very expensive</td><td class="desc-cell">Free</td></tr>
+              <tr><td class="desc-cell">Examples</td><td class="cmd-cell">Solaris, HP-UX, AIX</td><td class="cmd-cell">Ubuntu, RHEL, Arch</td></tr>
+              <tr><td class="desc-cell">Hardware</td><td class="desc-cell">Specific hardware</td><td class="desc-cell">Runs on anything</td></tr>
+              <tr><td class="desc-cell">Community</td><td class="desc-cell">Vendor-controlled</td><td class="desc-cell">Global community</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ARCHITECTURE PANEL -->
+      <div class="panel" id="panel-architecture">
+        <div class="panel-header">
+          <div class="panel-tag">Module 01 · Fundamentals</div>
+          <div class="panel-title">Linux Architecture</div>
+          <div class="panel-desc">Linux is built in layers — each layer talks only to the one above and below it. This design makes it stable, secure, and portable.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🏛️ The Linux Layer Model</div>
+          <div class="card-body">
+            <div style="display:flex; flex-direction:column; gap:4px; margin:8px 0;">
+              <div style="background:rgba(206,147,216,0.15); border:1px solid rgba(206,147,216,0.3); border-radius:6px; padding:10px 16px; text-align:center;">
+                <div style="color:var(--purple); font-size:11px; font-weight:700;">USER APPLICATIONS</div>
+                <div style="color:var(--muted); font-size:10px;">Firefox, Python scripts, vim, bash commands you run</div>
+              </div>
+              <div style="text-align:center; color:var(--muted); font-size:11px;">⬇</div>
+              <div style="background:rgba(79,195,247,0.15); border:1px solid rgba(79,195,247,0.3); border-radius:6px; padding:10px 16px; text-align:center;">
+                <div style="color:var(--blue); font-size:11px; font-weight:700;">SHELL (CLI Interface)</div>
+                <div style="color:var(--muted); font-size:10px;">bash, zsh, fish — translates your commands to system calls</div>
+              </div>
+              <div style="text-align:center; color:var(--muted); font-size:11px;">⬇</div>
+              <div style="background:rgba(0,200,100,0.12); border:1px solid rgba(0,200,100,0.3); border-radius:6px; padding:10px 16px; text-align:center;">
+                <div style="color:var(--green); font-size:11px; font-weight:700;">SYSTEM LIBRARIES (glibc)</div>
+                <div style="color:var(--muted); font-size:10px;">Standard functions — printf(), malloc(), open() — used by applications</div>
+              </div>
+              <div style="text-align:center; color:var(--muted); font-size:11px;">⬇</div>
+              <div style="background:rgba(255,183,0,0.12); border:1px solid rgba(255,183,0,0.3); border-radius:6px; padding:12px 16px; text-align:center;">
+                <div style="color:var(--amber); font-size:13px; font-weight:700;">LINUX KERNEL</div>
+                <div style="color:var(--muted); font-size:10px; margin-top:4px;">Process mgmt · Memory mgmt · Device drivers · File system · Networking</div>
+              </div>
+              <div style="text-align:center; color:var(--muted); font-size:11px;">⬇</div>
+              <div style="background:rgba(255,82,82,0.12); border:1px solid rgba(255,82,82,0.3); border-radius:6px; padding:10px 16px; text-align:center;">
+                <div style="color:var(--red); font-size:11px; font-weight:700;">HARDWARE</div>
+                <div style="color:var(--muted); font-size:10px;">CPU · RAM · Disk · Network Card · GPU</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">🔧 What the Kernel Does</div>
+            <div class="card-body" style="font-size:11px; line-height:2;">
+              <div><span class="hl-green">▸ Process Management</span> — creates, schedules, kills processes</div>
+              <div><span class="hl-blue">▸ Memory Management</span> — RAM allocation, virtual memory, swap</div>
+              <div><span class="hl-amber">▸ Device Drivers</span> — speaks to keyboard, disk, GPU</div>
+              <div><span class="hl-purple">▸ File System</span> — ext4, xfs, btrfs support</div>
+              <div><span class="hl-red">▸ Networking</span> — TCP/IP stack, socket management</div>
+              <div><span class="hl-green">▸ System Calls</span> — bridge between user space and kernel</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🐚 Types of Shells</div>
+            <div class="card-body">
+              <table class="cmd-table">
+                <tr><th>Shell</th><th>Features</th></tr>
+                <tr><td class="cmd-cell">bash</td><td class="desc-cell">Default on most distros. Powerful scripting.</td></tr>
+                <tr><td class="cmd-cell">zsh</td><td class="desc-cell">Extended bash. oh-my-zsh ecosystem. macOS default.</td></tr>
+                <tr><td class="cmd-cell">fish</td><td class="desc-cell">User-friendly. Auto-suggest. Colorful syntax.</td></tr>
+                <tr><td class="cmd-cell">sh</td><td class="desc-cell">POSIX compliant. Minimal. For scripts.</td></tr>
+                <tr><td class="cmd-cell">dash</td><td class="desc-cell">Lightweight. Fast. /bin/sh on Ubuntu.</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILESYSTEM PANEL -->
+      <div class="panel" id="panel-filesystem">
+        <div class="panel-header">
+          <div class="panel-tag">Module 02 · Core Concepts</div>
+          <div class="panel-title">Filesystem Hierarchy Standard</div>
+          <div class="panel-desc">In Linux, everything is a file — even devices, processes, and network sockets. The FHS defines where things live. Learn this and Linux makes perfect sense.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📁 The Linux Directory Tree</div>
+          <div class="card-body">
+            <div class="filesystem-tree">
+              <div><span class="tree-root">/</span> <span style="color:var(--muted); font-size:10px;">← root of everything</span></div>
+              <div style="margin-left:16px;">
+                <div><span class="tree-dir">├── bin/</span> <span class="tree-desc">Essential user commands (ls, cp, mv, cat)</span></div>
+                <div><span class="tree-dir">├── sbin/</span> <span class="tree-desc">System admin commands (fdisk, iptables, init)</span></div>
+                <div><span class="tree-dir">├── etc/</span> <span class="tree-desc">Config files — /etc/nginx/, /etc/passwd, /etc/hosts</span></div>
+                <div><span class="tree-dir">├── home/</span> <span class="tree-desc">User home dirs — /home/john/, /home/jane/</span></div>
+                <div><span class="tree-dir">├── root/</span> <span class="tree-desc">Home directory of the root (superuser)</span></div>
+                <div><span class="tree-dir">├── var/</span> <span class="tree-desc">Variable data — logs (/var/log), mail, databases</span></div>
+                <div><span class="tree-dir">├── tmp/</span> <span class="tree-desc">Temporary files — cleared on reboot</span></div>
+                <div><span class="tree-dir">├── usr/</span> <span class="tree-desc">User programs, libraries, docs</span></div>
+                <div style="margin-left:20px;"><span class="tree-dir">├── usr/bin/</span> <span class="tree-desc">Non-essential user commands</span></div>
+                <div style="margin-left:20px;"><span class="tree-dir">└── usr/lib/</span> <span class="tree-desc">Libraries for /usr/bin programs</span></div>
+                <div><span class="tree-dir">├── lib/</span> <span class="tree-desc">Essential shared libraries (like .dll on Windows)</span></div>
+                <div><span class="tree-dir">├── dev/</span> <span class="tree-desc">Device files — /dev/sda (disk), /dev/null (void)</span></div>
+                <div><span class="tree-dir">├── proc/</span> <span class="tree-desc">Virtual FS — running processes, kernel params</span></div>
+                <div><span class="tree-dir">├── sys/</span> <span class="tree-desc">Virtual FS — kernel & hardware info</span></div>
+                <div><span class="tree-dir">├── mnt/</span> <span class="tree-desc">Temporary mount point for filesystems</span></div>
+                <div><span class="tree-dir">├── media/</span> <span class="tree-desc">Auto-mounted removable drives (USB, CD)</span></div>
+                <div><span class="tree-dir">├── opt/</span> <span class="tree-desc">Optional/third-party software</span></div>
+                <div><span class="tree-dir">└── boot/</span> <span class="tree-desc">Bootloader, kernel images — vmlinuz, grub</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">💡 Key Concepts to Remember</div>
+          <div class="card-body" style="font-size:11px; line-height:2.2;">
+            <div><span class="hl-green">▸ Everything is a file</span> — even your keyboard is <span class="hl-amber">/dev/input/event0</span></div>
+            <div><span class="hl-green">▸ No drive letters</span> — no C:\ or D:\ — everything is under <span class="hl-amber">/</span></div>
+            <div><span class="hl-green">▸ Case-sensitive</span> — <span class="hl-amber">File.txt</span> ≠ <span class="hl-amber">file.txt</span> ≠ <span class="hl-amber">FILE.TXT</span></div>
+            <div><span class="hl-green">▸ Hidden files</span> — start with a dot: <span class="hl-amber">.bashrc</span>, <span class="hl-amber">.ssh/</span></div>
+            <div><span class="hl-green">▸ Symlinks</span> — like shortcuts: <span class="hl-amber">ln -s /real/path /shortcut</span></div>
+          </div>
+        </div>
+
+        <div class="checkpoint">
+          <div class="checkpoint-title">✦ CHECKPOINT — Filesystem Quiz</div>
+          <div class="quiz-q">Q: Where are system-wide configuration files stored in Linux?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="checkAnswer(this, false)">A. /home</button>
+            <button class="quiz-opt" onclick="checkAnswer(this, false)">B. /usr/bin</button>
+            <button class="quiz-opt" onclick="checkAnswer(this, true)">C. /etc</button>
+            <button class="quiz-opt" onclick="checkAnswer(this, false)">D. /var</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMMANDS PANEL -->
+      <div class="panel" id="panel-commands">
+        <div class="panel-header">
+          <div class="panel-tag">Module 02 · Core Concepts</div>
+          <div class="panel-title">Essential Linux Commands</div>
+          <div class="panel-desc">The command line is your superpower. Master these and you can control any Linux system on Earth. We group them by purpose so they stick.</div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab active" onclick="showTab('cmd', 'nav')">Navigation</div>
+          <div class="tab" onclick="showTab('cmd', 'files')">Files & Text</div>
+          <div class="tab" onclick="showTab('cmd', 'search')">Search & Filter</div>
+          <div class="tab" onclick="showTab('cmd', 'advanced')">Advanced</div>
+        </div>
+
+        <div class="tab-content active" id="cmd-nav">
+          <div class="terminal">
+            <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">NAVIGATION COMMANDS</div></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">pwd</span>  <span class="output">         # Print working directory — where am I?</span></div>
+            <div class="term-line"><span class="output">/home/student</span></div>
+            <br>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">ls -la</span>  <span class="output">       # List ALL files with permissions</span></div>
+            <div class="term-line"><span class="output">drwxr-xr-x  5 student student 4096 Jan 10 10:00 .</span></div>
+            <div class="term-line"><span class="output">-rw-r--r--  1 student student  220 Jan 10 09:00 .bashrc</span></div>
+            <br>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">cd /var/log</span> <span class="output">  # Change to /var/log directory</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">cd ..</span>  <span class="output">       # Go up one level</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">cd ~</span>  <span class="output">        # Go to home directory</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">cd -</span>  <span class="output">        # Go to previous directory</span></div>
+          </div>
+          <table class="cmd-table">
+            <tr><th>Command</th><th>Description</th><th>Key Options</th></tr>
+            <tr><td class="cmd-cell">pwd</td><td class="desc-cell">Print current directory path</td><td class="desc-cell">—</td></tr>
+            <tr><td class="cmd-cell">ls</td><td class="desc-cell">List directory contents</td><td class="desc-cell">-l (long), -a (hidden), -h (human sizes), -R (recursive)</td></tr>
+            <tr><td class="cmd-cell">cd</td><td class="desc-cell">Change directory</td><td class="desc-cell">.. (up), ~ (home), - (previous)</td></tr>
+            <tr><td class="cmd-cell">tree</td><td class="desc-cell">Show directory as tree</td><td class="desc-cell">-L 2 (depth), -d (dirs only)</td></tr>
+            <tr><td class="cmd-cell">find</td><td class="desc-cell">Search for files/dirs</td><td class="desc-cell">-name, -type, -size, -mtime</td></tr>
+          </table>
+        </div>
+
+        <div class="tab-content" id="cmd-files">
+          <div class="terminal">
+            <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">FILE OPERATIONS</div></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">cat /etc/hostname</span>  <span class="output">  # Print file contents</span></div>
+            <div class="term-line"><span class="output">my-linux-server</span></div>
+            <br>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">cp file.txt backup/</span>  <span class="output">  # Copy file</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">mv old.txt new.txt</span>  <span class="output">   # Rename/move file</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">rm -rf old_folder/</span>  <span class="output">  # Delete folder (careful!)</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">mkdir -p a/b/c</span>  <span class="output">      # Create nested dirs</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">touch newfile.txt</span>  <span class="output">   # Create empty file</span></div>
+            <br>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">head -20 log.txt</span>  <span class="output">  # First 20 lines</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">tail -f /var/log/syslog</span>  <span class="output">  # Live-follow log file</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">wc -l file.txt</span>  <span class="output">    # Count lines in file</span></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="cmd-search">
+          <div class="terminal">
+            <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">SEARCH & FILTER</div></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">grep "error" /var/log/syslog</span>  <span class="output">  # Search for pattern</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">grep -ri "password" /etc/</span>  <span class="output">    # Recursive case-insensitive</span></div>
+            <br>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">find / -name "*.conf" 2>/dev/null</span>  <span class="output">  # Find all .conf files</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">find /home -type f -size +10M</span>  <span class="output">     # Files larger than 10MB</span></div>
+            <br>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">ps aux | grep nginx</span>  <span class="output">  # Pipe: find nginx processes</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">cat access.log | sort | uniq -c | sort -rn | head -10</span></div>
+            <div class="term-line"><span class="output">     142 192.168.1.1</span></div>
+            <div class="term-line"><span class="output">      87 10.0.0.5</span></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="cmd-advanced">
+          <div class="terminal">
+            <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">ADVANCED COMMANDS</div></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">awk '{print $1, $3}' data.txt</span>  <span class="output">  # Print columns 1 and 3</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">sed 's/old/new/g' file.txt</span>  <span class="output">   # Replace text globally</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">cut -d: -f1 /etc/passwd</span>  <span class="output">     # Get all usernames</span></div>
+            <br>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">tar -czf backup.tar.gz /home/</span>  <span class="output">  # Compress home dir</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">tar -xzf backup.tar.gz</span>  <span class="output">         # Extract archive</span></div>
+            <br>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">xargs</span>  <span class="output">  # Build commands from stdin</span></div>
+            <div class="term-line"><span class="prompt">$</span> <span class="cmd">find . -name "*.log" | xargs rm</span>  <span class="output">  # Delete all logs</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERMISSIONS PANEL -->
+      <div class="panel" id="panel-permissions">
+        <div class="panel-header">
+          <div class="panel-tag">Module 02 · Core Concepts</div>
+          <div class="panel-title">File Permissions & User Management</div>
+          <div class="panel-desc">Linux is multi-user by design. Every file has an owner and permissions. Understanding this is critical for security and system administration.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔐 Decoding File Permissions</div>
+          <div class="card-body">
+            <div style="background:#010409; border-radius:6px; padding:12px; margin-bottom:12px; font-size:13px; letter-spacing:1px; line-height:2.5;">
+              <span style="color:var(--blue);">-</span><span style="color:var(--green);">rwx</span><span style="color:var(--amber);">r-x</span><span style="color:var(--red);">r--</span>&nbsp; <span style="color:var(--muted);">1&nbsp; john&nbsp; staff&nbsp; 4096&nbsp; file.sh</span>
+              <div style="display:flex; gap:0; margin-top:4px; font-size:9px; letter-spacing:0;">
+                <div style="width:14px; text-align:center; color:var(--blue);">│</div>
+                <div style="width:42px; text-align:center; color:var(--green);">│</div>
+                <div style="width:42px; text-align:center; color:var(--amber);">│</div>
+                <div style="width:42px; text-align:center; color:var(--red);">│</div>
+              </div>
+              <div style="display:flex; gap:0; font-size:9px; color:var(--muted);">
+                <div style="width:14px; text-align:center;">type</div>
+                <div style="width:42px; text-align:center; color:var(--green);">owner</div>
+                <div style="width:42px; text-align:center; color:var(--amber);">group</div>
+                <div style="width:42px; text-align:center; color:var(--red);">others</div>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div style="font-size:11px; line-height:2.2;">
+                <div><span class="hl-green">r = 4</span> — Read permission</div>
+                <div><span class="hl-amber">w = 2</span> — Write permission</div>
+                <div><span class="hl-red">x = 1</span> — Execute permission</div>
+                <div><span class="hl-muted" style="color:var(--muted);">- = 0</span> — No permission</div>
+              </div>
+              <div style="font-size:11px; line-height:2.2;">
+                <div><span class="hl-green">rwx = 7</span> (4+2+1)</div>
+                <div><span class="hl-amber">rw- = 6</span> (4+2+0)</div>
+                <div><span class="hl-blue">r-x = 5</span> (4+0+1)</div>
+                <div><span class="hl-red">r-- = 4</span> (4+0+0)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="terminal">
+          <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">PERMISSION COMMANDS</div></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">chmod 755 script.sh</span>  <span class="output">      # rwxr-xr-x — owner: all, others: r+x</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">chmod +x deploy.sh</span>  <span class="output">       # Add execute permission</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">chmod -R 644 /var/www/</span>  <span class="output">   # Recursively set 644</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">chown john:staff file.txt</span>  <span class="output">  # Change owner and group</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">chown -R www-data /var/www/</span>  <span class="output"> # Web server ownership</span></div>
+          <br>
+          <div class="term-line"><span class="output"># USER MANAGEMENT</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">useradd -m -s /bin/bash john</span>  <span class="output">  # Create user with home+shell</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">passwd john</span>  <span class="output">               # Set user password</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">usermod -aG sudo john</span>  <span class="output">     # Add john to sudo group</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">id john</span>  <span class="output">                    # Show user info</span></div>
+          <div class="term-line"><span class="output">uid=1001(john) gid=1001(john) groups=1001(john),27(sudo)</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">who</span>  <span class="output">                       # Who is logged in?</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">sudo su -</span>  <span class="output">                 # Switch to root user</span></div>
+        </div>
+
+        <div class="checkpoint">
+          <div class="checkpoint-title">✦ CHECKPOINT — Permissions Quiz</div>
+          <div class="quiz-q">Q: What does <span style="color:var(--green);">chmod 644 file.txt</span> mean for the "group" and "others"?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="checkAnswer(this, false)">A. Both have read+write</button>
+            <button class="quiz-opt" onclick="checkAnswer(this, true)">B. Both have read-only</button>
+            <button class="quiz-opt" onclick="checkAnswer(this, false)">C. Group can write, others cannot</button>
+            <button class="quiz-opt" onclick="checkAnswer(this, false)">D. Both have no permissions</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PACKAGES PANEL -->
+      <div class="panel" id="panel-packages">
+        <div class="panel-header">
+          <div class="panel-tag">Module 02 · Core Concepts</div>
+          <div class="panel-title">Package Management</div>
+          <div class="panel-desc">In Linux, software is installed via package managers — not by downloading .exe files. They handle dependencies, updates, and removal automatically.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📦 Package Manager Comparison</div>
+          <div class="card-body">
+            <table class="cmd-table">
+              <tr><th>Task</th><th>apt (Ubuntu/Debian)</th><th>dnf/yum (RHEL/CentOS)</th><th>pacman (Arch)</th></tr>
+              <tr><td class="desc-cell">Install</td><td class="cmd-cell">apt install nginx</td><td class="cmd-cell">dnf install nginx</td><td class="cmd-cell">pacman -S nginx</td></tr>
+              <tr><td class="desc-cell">Remove</td><td class="cmd-cell">apt remove nginx</td><td class="cmd-cell">dnf remove nginx</td><td class="cmd-cell">pacman -R nginx</td></tr>
+              <tr><td class="desc-cell">Update all</td><td class="cmd-cell">apt upgrade</td><td class="cmd-cell">dnf upgrade</td><td class="cmd-cell">pacman -Syu</td></tr>
+              <tr><td class="desc-cell">Search</td><td class="cmd-cell">apt search python</td><td class="cmd-cell">dnf search python</td><td class="cmd-cell">pacman -Ss python</td></tr>
+              <tr><td class="desc-cell">List installed</td><td class="cmd-cell">dpkg -l</td><td class="cmd-cell">rpm -qa</td><td class="cmd-cell">pacman -Q</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="terminal">
+          <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">UBUNTU / APT WORKFLOW</div></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">sudo apt update</span>  <span class="output">           # Refresh package list from repos</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">sudo apt upgrade -y</span>  <span class="output">       # Upgrade all packages</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">sudo apt install vim curl git</span>  <span class="output"> # Install multiple packages</span></div>
+          <div class="term-line"><span class="output">Reading package lists... Done</span></div>
+          <div class="term-line"><span class="output">Building dependency tree... Done</span></div>
+          <div class="term-line"><span class="output">0 upgraded, 3 newly installed, 0 to remove</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">sudo apt autoremove</span>  <span class="output">       # Remove unused packages</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">apt-cache show nginx</span>  <span class="output">      # Show package details</span></div>
+        </div>
+      </div>
+
+      <!-- SCRIPTING PANEL -->
+      <div class="panel" id="panel-scripting">
+        <div class="panel-header">
+          <div class="panel-tag">Module 03 · Intermediate</div>
+          <div class="panel-title">Shell Scripting (Bash)</div>
+          <div class="panel-desc">Automate anything. A bash script is a text file with commands that run sequentially. This is where Linux becomes truly powerful — replace hours of manual work with a 20-line script.</div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab active" onclick="showTab('script', 'basics')">Basics</div>
+          <div class="tab" onclick="showTab('script', 'control')">Control Flow</div>
+          <div class="tab" onclick="showTab('script', 'functions')">Functions</div>
+          <div class="tab" onclick="showTab('script', 'project')">Mini Project</div>
+        </div>
+
+        <div class="tab-content active" id="script-basics">
+          <div class="terminal">
+            <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">BASH FUNDAMENTALS</div></div>
+            <div class="term-line"><span class="hl-green">#!/bin/bash</span>  <span class="output">   # Shebang — tells OS to use bash</span></div>
+            <br>
+            <div class="term-line"><span class="output"># Variables</span></div>
+            <div class="term-line"><span class="hl-amber">NAME</span>=<span class="hl-blue">"Linux Student"</span>  <span class="output"> # No spaces around =</span></div>
+            <div class="term-line"><span class="hl-purple">AGE</span>=<span class="hl-blue">21</span></div>
+            <div class="term-line"><span class="cmd">echo</span> <span class="hl-blue">"Hello, $NAME! You are $AGE years old."</span></div>
+            <div class="term-line"><span class="output">Hello, Linux Student! You are 21 years old.</span></div>
+            <br>
+            <div class="term-line"><span class="output"># Command substitution</span></div>
+            <div class="term-line"><span class="hl-amber">CURRENT_DATE</span>=$(<span class="cmd">date +%Y-%m-%d</span>)</div>
+            <div class="term-line"><span class="hl-amber">FILES_COUNT</span>=$(<span class="cmd">ls /home | wc -l</span>)</div>
+            <div class="term-line"><span class="cmd">echo</span> <span class="hl-blue">"Today: $CURRENT_DATE | Home dirs: $FILES_COUNT"</span></div>
+            <br>
+            <div class="term-line"><span class="output"># Special variables</span></div>
+            <div class="term-line"><span class="hl-green">$0</span> <span class="output">= script name</span></div>
+            <div class="term-line"><span class="hl-green">$1 $2 $3</span> <span class="output">= command-line arguments</span></div>
+            <div class="term-line"><span class="hl-green">$#</span> <span class="output">= number of args   </span> <span class="hl-green">$?</span> <span class="output">= last exit code</span></div>
+            <div class="term-line"><span class="hl-green">$$</span> <span class="output">= current PID      </span> <span class="hl-green">$*</span> <span class="output">= all args as string</span></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="script-control">
+          <div class="terminal">
+            <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">CONTROL FLOW</div></div>
+            <div class="term-line"><span class="output"># IF-ELSE</span></div>
+            <div class="term-line"><span class="hl-blue">if</span> [ $AGE -ge 18 ]; <span class="hl-blue">then</span></div>
+            <div class="term-line">&nbsp;&nbsp;echo <span class="hl-green">"Adult"</span></div>
+            <div class="term-line"><span class="hl-blue">elif</span> [ $AGE -ge 13 ]; <span class="hl-blue">then</span></div>
+            <div class="term-line">&nbsp;&nbsp;echo <span class="hl-green">"Teenager"</span></div>
+            <div class="term-line"><span class="hl-blue">else</span></div>
+            <div class="term-line">&nbsp;&nbsp;echo <span class="hl-green">"Child"</span></div>
+            <div class="term-line"><span class="hl-blue">fi</span></div>
+            <br>
+            <div class="term-line"><span class="output"># FOR LOOP</span></div>
+            <div class="term-line"><span class="hl-blue">for</span> server <span class="hl-blue">in</span> web1 web2 web3; <span class="hl-blue">do</span></div>
+            <div class="term-line">&nbsp;&nbsp;echo <span class="hl-green">"Pinging $server..."</span></div>
+            <div class="term-line">&nbsp;&nbsp;ping -c 1 $server</div>
+            <div class="term-line"><span class="hl-blue">done</span></div>
+            <br>
+            <div class="term-line"><span class="output"># WHILE LOOP</span></div>
+            <div class="term-line"><span class="hl-amber">COUNT</span>=1</div>
+            <div class="term-line"><span class="hl-blue">while</span> [ $COUNT -le 5 ]; <span class="hl-blue">do</span></div>
+            <div class="term-line">&nbsp;&nbsp;echo <span class="hl-green">"Attempt $COUNT"</span></div>
+            <div class="term-line">&nbsp;&nbsp;(( COUNT++ ))</div>
+            <div class="term-line"><span class="hl-blue">done</span></div>
+            <br>
+            <div class="term-line"><span class="output"># Comparison operators</span></div>
+            <div class="term-line"><span class="output">-eq (==)  -ne (!=)  -lt (<)  -gt (>)  -le (<=)  -ge (>=)</span></div>
+            <div class="term-line"><span class="output">-f (is file)  -d (is dir)  -z (empty string)  -n (not empty)</span></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="script-functions">
+          <div class="terminal">
+            <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">FUNCTIONS & BEST PRACTICES</div></div>
+            <div class="term-line"><span class="output"># Define a function</span></div>
+            <div class="term-line"><span class="hl-amber">greet_user()</span> {</div>
+            <div class="term-line">&nbsp;&nbsp;<span class="hl-blue">local</span> <span class="hl-amber">name</span>=$1  <span class="output">  # local = variable inside function only</span></div>
+            <div class="term-line">&nbsp;&nbsp;echo <span class="hl-green">"Welcome, $name! $(date +%H:%M)"</span></div>
+            <div class="term-line">&nbsp;&nbsp;<span class="hl-blue">return</span> 0</div>
+            <div class="term-line">}</div>
+            <div class="term-line">greet_user <span class="hl-green">"Alice"</span></div>
+            <div class="term-line"><span class="output">Welcome, Alice! 14:30</span></div>
+            <br>
+            <div class="term-line"><span class="output"># Error handling with set</span></div>
+            <div class="term-line"><span class="hl-green">set -euo pipefail</span>  <span class="output">  # Exit on error, undefined vars, pipe fail</span></div>
+            <br>
+            <div class="term-line"><span class="output"># Logging pattern</span></div>
+            <div class="term-line"><span class="hl-amber">log()</span> { echo <span class="hl-green">"[$(date '+%Y-%m-%d %H:%M:%S')] $*"</span>; }</div>
+            <div class="term-line">log <span class="hl-green">"Deployment started"</span></div>
+            <div class="term-line"><span class="output">[2024-01-10 14:30:00] Deployment started</span></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="script-project">
+          <div class="card">
+            <div class="card-title">🚀 Mini Project: System Health Check Script</div>
+            <div class="card-body">
+              <p style="font-size:11px; color:var(--muted); margin-bottom:12px;">Build a real script used by sysadmins daily!</p>
+            </div>
+          </div>
+          <div class="terminal">
+            <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">health_check.sh</div></div>
+            <div class="term-line"><span class="hl-green">#!/bin/bash</span></div>
+            <div class="term-line"><span class="hl-green">set -euo pipefail</span></div>
+            <br>
+            <div class="term-line"><span class="output">echo "====== SYSTEM HEALTH REPORT ======"</span></div>
+            <div class="term-line"><span class="output">echo "Date: $(date)"</span></div>
+            <div class="term-line"><span class="output">echo "Host: $(hostname)"</span></div>
+            <div class="term-line"><span class="output">echo ""</span></div>
+            <br>
+            <div class="term-line"><span class="output"># CPU Load</span></div>
+            <div class="term-line"><span class="hl-amber">CPU_LOAD</span>=$(cat /proc/loadavg | awk '{print $1}')</div>
+            <div class="term-line"><span class="output">echo "CPU 1-min load: $CPU_LOAD"</span></div>
+            <br>
+            <div class="term-line"><span class="output"># Memory</span></div>
+            <div class="term-line">free -h | grep Mem | awk '{print "RAM: "$3" used of "$2}'</div>
+            <br>
+            <div class="term-line"><span class="output"># Disk Usage</span></div>
+            <div class="term-line">df -h / | awk 'NR==2 {print "Disk: "$3" used of "$2" ("$5")"}'</div>
+            <br>
+            <div class="term-line"><span class="output"># Check if nginx is running</span></div>
+            <div class="term-line"><span class="hl-blue">if</span> systemctl is-active --quiet nginx; <span class="hl-blue">then</span></div>
+            <div class="term-line">&nbsp;&nbsp;echo <span class="hl-green">"[OK] nginx is running"</span></div>
+            <div class="term-line"><span class="hl-blue">else</span></div>
+            <div class="term-line">&nbsp;&nbsp;echo <span class="hl-red">"[ALERT] nginx is DOWN!"</span></div>
+            <div class="term-line"><span class="hl-blue">fi</span></div>
+            <br>
+            <div class="term-line"><span class="output">echo "=================================="</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROCESSES PANEL -->
+      <div class="panel" id="panel-processes">
+        <div class="panel-header">
+          <div class="panel-tag">Module 03 · Intermediate</div>
+          <div class="panel-title">Process Management</div>
+          <div class="panel-desc">A process is any running program. Linux can run thousands simultaneously. You need to start, stop, monitor, and prioritize them.</div>
+        </div>
+
+        <div class="terminal">
+          <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">PROCESS COMMANDS</div></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">ps aux</span>  <span class="output">                 # All processes (all users, full details)</span></div>
+          <div class="term-line"><span class="output">USER    PID %CPU %MEM VSZ  RSS TTY  STAT START TIME COMMAND</span></div>
+          <div class="term-line"><span class="output">root      1  0.0  0.1 169  12   ?    Ss   Jan10 0:01 /sbin/init</span></div>
+          <div class="term-line"><span class="output">john   1234  2.5  5.0 512  480  pts/0 S+  14:00 0:05 python3 app.py</span></div>
+          <br>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">top</span>  <span class="output">              # Interactive process monitor (q to quit)</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">htop</span>  <span class="output">             # Better version of top (install first)</span></div>
+          <br>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">kill 1234</span>  <span class="output">         # Send SIGTERM (graceful stop)</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">kill -9 1234</span>  <span class="output">      # SIGKILL — force kill (no mercy)</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">pkill nginx</span>  <span class="output">       # Kill by process name</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">killall python3</span>  <span class="output">   # Kill all processes named python3</span></div>
+          <br>
+          <div class="term-line"><span class="output"># Background / Foreground</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">./backup.sh &</span>  <span class="output">     # Run in background</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">jobs</span>  <span class="output">             # List background jobs</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">fg %1</span>  <span class="output">            # Bring job 1 to foreground</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">nohup ./server.sh &</span>  <span class="output">  # Run immune to logout</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">nice -n 10 ./job.sh</span>  <span class="output">  # Run with lower priority</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚙️ Systemd — Modern Service Management</div>
+          <div class="card-body">
+            <div class="terminal" style="margin:0;">
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">systemctl start nginx</span>  <span class="output">    # Start a service</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">systemctl stop nginx</span>  <span class="output">     # Stop a service</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">systemctl restart nginx</span>  <span class="output">  # Restart a service</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">systemctl enable nginx</span>  <span class="output">   # Start on boot</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">systemctl status nginx</span>  <span class="output">   # Check service status</span></div>
+              <div class="term-line"><span class="output">● nginx.service - A high performance web server</span></div>
+              <div class="term-line"><span class="output">   Loaded: loaded (/lib/systemd/system/nginx.service)</span></div>
+              <div class="term-line"><span class="output">   Active: <span class="hl-green">active (running)</span> since Jan 10; 2h ago</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">journalctl -u nginx -f</span>  <span class="output">   # Follow service logs</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NETWORKING PANEL -->
+      <div class="panel" id="panel-networking">
+        <div class="panel-header">
+          <div class="panel-tag">Module 03 · Intermediate</div>
+          <div class="panel-title">Networking in Linux</div>
+          <div class="panel-desc">Linux is the networking OS. From viewing your IP to configuring firewalls and analyzing traffic, the CLI gives you total control.</div>
+        </div>
+
+        <div class="terminal">
+          <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">NETWORK COMMANDS</div></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">ip addr show</span>  <span class="output">          # Show all IP addresses</span></div>
+          <div class="term-line"><span class="output">2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</span></div>
+          <div class="term-line"><span class="output">    inet <span class="hl-green">192.168.1.100</span>/24 brd 192.168.1.255</span></div>
+          <br>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">ip route show</span>  <span class="output">         # Routing table</span></div>
+          <div class="term-line"><span class="output">default via 192.168.1.1 dev eth0</span></div>
+          <br>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">ping -c 4 google.com</span>  <span class="output">  # Test connectivity</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">traceroute google.com</span>  <span class="output"> # Trace route to destination</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">nslookup google.com</span>  <span class="output">   # DNS lookup</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">dig google.com A</span>  <span class="output">      # Advanced DNS query</span></div>
+          <br>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">ss -tuln</span>  <span class="output">              # Open ports (modern netstat)</span></div>
+          <div class="term-line"><span class="output">Netid State  Recv-Q Send-Q   Local Address:Port</span></div>
+          <div class="term-line"><span class="output">tcp   LISTEN 0      128      0.0.0.0:22</span></div>
+          <div class="term-line"><span class="output">tcp   LISTEN 0      511      0.0.0.0:80</span></div>
+          <br>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">curl -I https://example.com</span>  <span class="output">  # HTTP headers</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">wget -q https://file.com/app.tar.gz</span>  <span class="output">  # Download file</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">tcpdump -i eth0 port 80</span>  <span class="output">  # Capture HTTP traffic</span></div>
+        </div>
+      </div>
+
+      <!-- DISKS PANEL -->
+      <div class="panel" id="panel-disks">
+        <div class="panel-header">
+          <div class="panel-tag">Module 03 · Intermediate</div>
+          <div class="panel-title">Disk Management & System Monitoring</div>
+          <div class="panel-desc">Managing storage and watching system health are core sysadmin skills. Know where your space went and catch problems before they crash your server.</div>
+        </div>
+
+        <div class="terminal">
+          <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">DISK & MONITORING COMMANDS</div></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">df -h</span>  <span class="output">               # Disk usage per filesystem</span></div>
+          <div class="term-line"><span class="output">Filesystem  Size  Used Avail Use% Mounted on</span></div>
+          <div class="term-line"><span class="output">/dev/sda1    50G   22G   26G  46% /</span></div>
+          <div class="term-line"><span class="output">/dev/sdb1   500G  200G  300G  40% /data</span></div>
+          <br>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">du -sh /var/log/*</span>  <span class="output">   # Size of each file/dir</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">du -sh /* | sort -rh | head</span>  <span class="output">  # Find top space hogs</span></div>
+          <br>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">lsblk</span>  <span class="output">               # List block devices</span></div>
+          <div class="term-line"><span class="output">NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT</span></div>
+          <div class="term-line"><span class="output">sda      8:0    0    50G  0 disk</span></div>
+          <div class="term-line"><span class="output">└─sda1   8:1    0    50G  0 part /</span></div>
+          <br>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">free -h</span>  <span class="output">             # RAM usage</span></div>
+          <div class="term-line"><span class="output">              total   used   free  shared  buff/cache  available</span></div>
+          <div class="term-line"><span class="output">Mem:          7.8G    2.1G   1.2G   256M       4.5G      5.2G</span></div>
+          <div class="term-line"><span class="output">Swap:         2.0G      0B   2.0G</span></div>
+          <br>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">vmstat 2 5</span>  <span class="output">         # System stats every 2s, 5 times</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">iostat -x 1</span>  <span class="output">        # Disk I/O stats</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">uptime</span>  <span class="output">              # Load averages + uptime</span></div>
+          <div class="term-line"><span class="output"> 14:30  up 42 days, 3:21,  2 users,  load average: 0.15, 0.20, 0.22</span></div>
+        </div>
+      </div>
+
+      <!-- SYSADMIN PANEL -->
+      <div class="panel" id="panel-sysadmin">
+        <div class="panel-header">
+          <div class="panel-tag">Module 04 · Advanced</div>
+          <div class="panel-title">Linux System Administration</div>
+          <div class="panel-desc">Sysadmins keep servers alive. They configure services, manage users, schedule jobs, and respond to incidents. These are industry-critical skills.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⏰ Cron Jobs — Scheduled Automation</div>
+          <div class="card-body">
+            <div class="terminal" style="margin:0 0 12px;">
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">crontab -e</span>  <span class="output">  # Edit current user's cron jobs</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">crontab -l</span>  <span class="output">  # List cron jobs</span></div>
+              <br>
+              <div class="term-line"><span class="output"># Cron syntax: minute hour day month weekday command</span></div>
+              <div class="term-line"><span class="hl-amber">0 2 * * *</span>    <span class="hl-green">/usr/local/bin/backup.sh</span>  <span class="output"> # Daily 2am</span></div>
+              <div class="term-line"><span class="hl-amber">*/5 * * * *</span>  <span class="hl-green">/usr/bin/check_disk.sh</span>   <span class="output"> # Every 5 mins</span></div>
+              <div class="term-line"><span class="hl-amber">0 0 1 * *</span>    <span class="hl-green">/usr/bin/monthly_report.sh</span> <span class="output"># 1st of month midnight</span></div>
+              <div class="term-line"><span class="hl-amber">0 9 * * 1-5</span>  <span class="hl-green">/usr/bin/send_report.sh</span>  <span class="output"> # Weekdays 9am</span></div>
+            </div>
+            <div style="font-size:10px; color:var(--muted);">Pro tip: Use <span style="color:var(--green);">crontab.guru</span> website to visually build cron expressions</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📝 Log Management</div>
+          <div class="card-body">
+            <div class="terminal" style="margin:0;">
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">cat /var/log/syslog</span>  <span class="output">       # Main system log</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">cat /var/log/auth.log</span>  <span class="output">     # Auth/SSH attempts</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">journalctl -xe</span>  <span class="output">            # systemd journal</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">journalctl --since "1h ago"</span>  <span class="output"> # Last hour logs</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">journalctl -p err</span>  <span class="output">         # Only errors</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">grep "Failed password" /var/log/auth.log | tail -20</span></div>
+              <div class="term-line"><span class="output">Jan 10 14:23:01 sshd[1234]: Failed password for root from 45.33.32.156</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECURITY PANEL -->
+      <div class="panel" id="panel-security">
+        <div class="panel-header">
+          <div class="panel-tag">Module 04 · Advanced</div>
+          <div class="panel-title">Security, SSH & Firewalls</div>
+          <div class="panel-desc">A Linux server exposed to the internet is attacked within minutes. Proper security configuration is not optional — it's survival.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔑 SSH — Secure Shell</div>
+          <div class="card-body">
+            <div class="terminal" style="margin:0;">
+              <div class="term-line"><span class="output"># Connect to remote server</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">ssh user@192.168.1.100</span>  <span class="output">           # Password login</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">ssh -i ~/.ssh/mykey.pem user@server</span>  <span class="output">  # Key-based login</span></div>
+              <br>
+              <div class="term-line"><span class="output"># Generate SSH key pair (DO THIS FIRST!)</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">ssh-keygen -t ed25519 -C "your@email.com"</span></div>
+              <div class="term-line"><span class="output">Generating public/private ed25519 key pair.</span></div>
+              <div class="term-line"><span class="output">Enter passphrase: ****</span></div>
+              <br>
+              <div class="term-line"><span class="output"># Copy key to server</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">ssh-copy-id user@server</span>  <span class="output">  # Auto-copies ~/.ssh/id_ed25519.pub</span></div>
+              <br>
+              <div class="term-line"><span class="output"># Harden /etc/ssh/sshd_config</span></div>
+              <div class="term-line"><span class="hl-red">PermitRootLogin no</span>  <span class="output">        # Never allow root SSH</span></div>
+              <div class="term-line"><span class="hl-red">PasswordAuthentication no</span>  <span class="output">  # Keys only</span></div>
+              <div class="term-line"><span class="hl-amber">Port 2222</span>  <span class="output">                  # Change default port</span></div>
+              <div class="term-line"><span class="hl-green">AllowUsers john deploy</span>  <span class="output">    # Whitelist users</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🧱 UFW Firewall (Ubuntu)</div>
+          <div class="card-body">
+            <div class="terminal" style="margin:0;">
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">sudo ufw status</span>  <span class="output">           # Check firewall</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">sudo ufw enable</span>  <span class="output">           # Enable firewall</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">sudo ufw allow 22/tcp</span>  <span class="output">     # Allow SSH</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">sudo ufw allow 80/tcp</span>  <span class="output">     # Allow HTTP</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">sudo ufw allow 443/tcp</span>  <span class="output">    # Allow HTTPS</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">sudo ufw deny 3306/tcp</span>  <span class="output">    # Block MySQL from outside</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">sudo ufw allow from 10.0.0.0/8</span>  <span class="output">  # Allow private subnet</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCKER PANEL -->
+      <div class="panel" id="panel-docker">
+        <div class="panel-header">
+          <div class="panel-tag">Module 04 · Advanced</div>
+          <div class="panel-title">Docker & Containers</div>
+          <div class="panel-desc">Docker packages your app + its dependencies into a portable "container" — works the same everywhere. The most important tech skill in modern DevOps.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🐳 Container vs VM — What's the Difference?</div>
+          <div class="card-body">
+            <div class="grid-2">
+              <div style="background:rgba(255,82,82,0.08); border:1px solid rgba(255,82,82,0.2); border-radius:6px; padding:10px;">
+                <div style="color:var(--red); font-size:11px; font-weight:700; margin-bottom:6px;">Virtual Machine (VM)</div>
+                <div style="font-size:10px; color:var(--muted); line-height:1.9;">▸ Full OS per VM (2-4GB RAM each)<br>▸ Boot time: 1-2 minutes<br>▸ Strong isolation<br>▸ Hypervisor required</div>
+              </div>
+              <div style="background:rgba(0,200,100,0.08); border:1px solid rgba(0,200,100,0.2); border-radius:6px; padding:10px;">
+                <div style="color:var(--green); font-size:11px; font-weight:700; margin-bottom:6px;">Docker Container</div>
+                <div style="font-size:10px; color:var(--muted); line-height:1.9;">▸ Shares host kernel (MBs of RAM)<br>▸ Boot time: milliseconds<br>▸ Process isolation<br>▸ Just Docker Engine</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="terminal">
+          <div class="term-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><div class="term-label">DOCKER COMMANDS</div></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">docker pull nginx</span>  <span class="output">               # Download image</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">docker run -d -p 80:80 --name web nginx</span>  <span class="output"> # Run nginx</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">docker ps</span>  <span class="output">                       # List running containers</span></div>
+          <div class="term-line"><span class="output">CONTAINER ID  IMAGE  COMMAND               STATUS        PORTS</span></div>
+          <div class="term-line"><span class="output">a1b2c3d4e5f6  nginx  "/docker-entrypoint"  Up 2 minutes  0.0.0.0:80->80/tcp</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">docker exec -it web bash</span>  <span class="output">         # Get shell inside container</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">docker stop web && docker rm web</span>  <span class="output">  # Stop and remove</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">docker logs -f web</span>  <span class="output">              # Follow container logs</span></div>
+          <br>
+          <div class="term-line"><span class="output"># Dockerfile — build your own image</span></div>
+          <div class="term-line"><span class="hl-green">FROM</span> python:3.11-alpine</div>
+          <div class="term-line"><span class="hl-blue">WORKDIR</span> /app</div>
+          <div class="term-line"><span class="hl-amber">COPY</span> requirements.txt .</div>
+          <div class="term-line"><span class="hl-purple">RUN</span> pip install -r requirements.txt</div>
+          <div class="term-line"><span class="hl-amber">COPY</span> . .</div>
+          <div class="term-line"><span class="hl-red">CMD</span> ["python", "app.py"]</div>
+          <br>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">docker build -t myapp:1.0 .</span></div>
+          <div class="term-line"><span class="prompt">$</span> <span class="cmd">docker run -d -p 5000:5000 myapp:1.0</span></div>
+        </div>
+      </div>
+
+      <!-- CLOUD PANEL -->
+      <div class="panel" id="panel-cloud">
+        <div class="panel-header">
+          <div class="panel-tag">Module 05 · Real World</div>
+          <div class="panel-title">Cloud, DevOps & Real-World Linux</div>
+          <div class="panel-desc">Linux is the foundation of modern cloud computing. Every AWS EC2 instance, every Kubernetes pod, every CI/CD pipeline runs on Linux. This is the industry.</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">☁️ Linux in Cloud Platforms</div>
+            <div class="card-body" style="font-size:11px; line-height:2.2;">
+              <div><span class="hl-amber">AWS EC2</span> — spin up Linux servers in 60 seconds. 90%+ run Amazon Linux or Ubuntu.</div>
+              <div><span class="hl-blue">Google GCP</span> — Compute Engine VMs. Kubernetes Engine uses Linux nodes.</div>
+              <div><span class="hl-purple">Azure</span> — Linux VMs are now majority of Azure compute.</div>
+              <div><span class="hl-green">All CI/CD</span> — GitHub Actions, GitLab CI, Jenkins — all run on Linux.</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🔁 DevOps & Linux Role</div>
+            <div class="card-body" style="font-size:11px; line-height:2.2;">
+              <div><span class="hl-green">▸ Deploy</span> code to Linux servers via SSH + git</div>
+              <div><span class="hl-blue">▸ Monitor</span> with Prometheus, Grafana on Linux</div>
+              <div><span class="hl-amber">▸ Containers</span> — Docker/K8s run on Linux kernel</div>
+              <div><span class="hl-red">▸ Infra as Code</span> — Ansible, Terraform manage Linux</div>
+              <div><span class="hl-purple">▸ Logs</span> — ELK stack (Elasticsearch) on Linux</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔧 Kubernetes (K8s) Essentials</div>
+          <div class="card-body">
+            <div class="terminal" style="margin:0;">
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">kubectl get pods</span>  <span class="output">           # List running pods</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">kubectl get nodes</span>  <span class="output">          # List cluster nodes</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">kubectl apply -f app.yaml</span>  <span class="output">  # Deploy from YAML</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">kubectl logs pod-name</span>  <span class="output">      # View pod logs</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">kubectl exec -it pod-name -- bash</span>  <span class="output">  # Shell into pod</span></div>
+              <div class="term-line"><span class="prompt">$</span> <span class="cmd">kubectl scale deploy/app --replicas=5</span>  <span class="output">  # Scale up</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI PANEL -->
+      <div class="panel" id="panel-ai">
+        <div class="panel-header">
+          <div class="panel-tag">Module 06 · Modern Developments</div>
+          <div class="panel-title">Linux in AI / ML Systems</div>
+          <div class="panel-desc">Every major AI model — GPT, Gemini, Claude — was trained on Linux clusters. The entire AI infrastructure stack runs on Linux. This is the cutting edge.</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">🤖 Why AI Runs on Linux</div>
+            <div class="card-body" style="font-size:11px; line-height:2.2;">
+              <div><span class="hl-green">▸ CUDA Drivers</span> — NVIDIA GPU drivers run on Linux kernel</div>
+              <div><span class="hl-amber">▸ Performance</span> — no OS overhead vs Windows</div>
+              <div><span class="hl-blue">▸ Containers</span> — Docker + Kubernetes scale training</div>
+              <div><span class="hl-purple">▸ PyTorch/TF</span> — optimized for Linux first</div>
+              <div><span class="hl-red">▸ Clusters</span> — SLURM job scheduler runs on Linux</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🧪 ML Environment Setup</div>
+            <div class="card-body">
+              <div class="terminal" style="margin:0; padding:10px;">
+                <div class="term-line" style="font-size:10px;"><span class="prompt">$</span> <span class="cmd">nvidia-smi</span>  <span class="output">  # Check GPU status</span></div>
+                <div class="term-line" style="font-size:10px;"><span class="prompt">$</span> <span class="cmd">python3 -m venv .venv</span></div>
+                <div class="term-line" style="font-size:10px;"><span class="prompt">$</span> <span class="cmd">source .venv/bin/activate</span></div>
+                <div class="term-line" style="font-size:10px;"><span class="prompt">$</span> <span class="cmd">pip install torch torchvision</span></div>
+                <div class="term-line" style="font-size:10px;"><span class="prompt">$</span> <span class="cmd">watch -n 1 nvidia-smi</span>  <span class="output">  # Monitor GPU training</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🌐 Industry Use Cases</div>
+          <div class="card-body">
+            <table class="cmd-table">
+              <tr><th>Domain</th><th>How Linux is Used</th><th>Key Skills Needed</th></tr>
+              <tr><td class="cmd-cell">Web Servers</td><td class="desc-cell">nginx/Apache on Ubuntu — serves 80% of the internet</td><td class="desc-cell">bash, systemd, nginx config, SSL</td></tr>
+              <tr><td class="cmd-cell">DevOps/SRE</td><td class="desc-cell">CI/CD pipelines, container orchestration, monitoring</td><td class="desc-cell">Docker, K8s, scripting, networking</td></tr>
+              <tr><td class="cmd-cell">Cybersecurity</td><td class="desc-cell">Kali Linux for pentesting, log analysis, incident response</td><td class="desc-cell">iptables, SSH, audit tools, grep</td></tr>
+              <tr><td class="cmd-cell">Embedded/IoT</td><td class="desc-cell">Raspberry Pi, routers, smart TVs, cars (Tesla)</td><td class="desc-cell">kernel modules, cross-compilation</td></tr>
+              <tr><td class="cmd-cell">AI/ML</td><td class="desc-cell">GPU training clusters, model serving, data pipelines</td><td class="desc-cell">CUDA, Python venvs, SLURM</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROADMAP PANEL -->
+      <div class="panel" id="panel-roadmap">
+        <div class="panel-header">
+          <div class="panel-tag">Learning Path</div>
+          <div class="panel-title">12-Week Study Roadmap</div>
+          <div class="panel-desc">A structured, realistic plan from zero to job-ready. 1-2 hours per day. Practice every concept in a real terminal — not just reading!</div>
+        </div>
+
+        <div class="week-card">
+          <div class="week-num">Week 01-02</div>
+          <div class="week-title">Foundation — Get Comfortable with the Terminal</div>
+          <div class="week-tasks">
+            <div class="week-task">Install Ubuntu (on WSL, VirtualBox, or dual-boot)</div>
+            <div class="week-task">Master navigation commands: pwd, ls, cd, tree</div>
+            <div class="week-task">Understand filesystem hierarchy — memorize /etc, /var, /home</div>
+            <div class="week-task">File operations: cp, mv, rm, mkdir, touch, cat, less</div>
+            <div class="week-task">Practice: Set up a project folder structure</div>
+          </div>
+        </div>
+
+        <div class="week-card">
+          <div class="week-num">Week 03-04</div>
+          <div class="week-title">Power User — Text Processing & Permissions</div>
+          <div class="week-tasks">
+            <div class="week-task">grep, find, awk, sed, cut, sort, uniq, wc</div>
+            <div class="week-task">Pipes |, redirection >, >>, <, 2>, /dev/null</div>
+            <div class="week-task">chmod, chown, file permissions (numeric + symbolic)</div>
+            <div class="week-task">User & group management: useradd, passwd, usermod, id</div>
+            <div class="week-task">Project: Parse a 10,000-line log file with grep+awk</div>
+          </div>
+        </div>
+
+        <div class="week-card">
+          <div class="week-num">Week 05-06</div>
+          <div class="week-title">Scripting — Automate Everything with Bash</div>
+          <div class="week-tasks">
+            <div class="week-task">Variables, conditionals (if/elif/else), loops (for/while)</div>
+            <div class="week-task">Functions, arguments ($1, $2), error handling (set -euo pipefail)</div>
+            <div class="week-task">Cron jobs — schedule scripts</div>
+            <div class="week-task">Project: Write a backup script + health check script</div>
+            <div class="week-task">Deploy a script that monitors and alerts on disk usage</div>
+          </div>
+        </div>
+
+        <div class="week-card">
+          <div class="week-num">Week 07-08</div>
+          <div class="week-title">Intermediate — Processes, Networking, Packages</div>
+          <div class="week-tasks">
+            <div class="week-task">Process mgmt: ps, top, htop, kill, nice, systemctl, journalctl</div>
+            <div class="week-task">Networking: ip, ss, ping, curl, wget, nslookup, dig, tcpdump</div>
+            <div class="week-task">Package management: apt, dpkg, snap — install nginx, mysql, python3</div>
+            <div class="week-task">Project: Set up a working LAMP/LEMP server from scratch</div>
+          </div>
+        </div>
+
+        <div class="week-card">
+          <div class="week-num">Week 09-10</div>
+          <div class="week-title">Advanced — Security, SSH, Sysadmin</div>
+          <div class="week-tasks">
+            <div class="week-task">SSH key generation, sshd_config hardening, port forwarding</div>
+            <div class="week-task">UFW/iptables firewall setup — whitelist-only approach</div>
+            <div class="week-task">fail2ban to block brute-force attacks</div>
+            <div class="week-task">Log analysis — find intrusion attempts in auth.log</div>
+            <div class="week-task">Project: Harden a fresh Ubuntu server to production standards</div>
+          </div>
+        </div>
+
+        <div class="week-card">
+          <div class="week-num">Week 11-12</div>
+          <div class="week-title">Industry-Ready — Docker, Cloud, DevOps</div>
+          <div class="week-tasks">
+            <div class="week-task">Docker: pull, run, build, Dockerfile, docker-compose</div>
+            <div class="week-task">Deploy an app on AWS EC2 / DigitalOcean Droplet</div>
+            <div class="week-task">Set up nginx reverse proxy + SSL certificate (Let's Encrypt)</div>
+            <div class="week-task">Kubernetes basics: kubectl, pods, deployments, services</div>
+            <div class="week-task">Final Project: Deploy a Dockerized web app on cloud with monitoring</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚠️ Common Mistakes to Avoid</div>
+          <div class="card-body" style="font-size:11px; line-height:2.2;">
+            <div><span class="hl-red">✗</span> Running everything as root — use sudo only when needed</div>
+            <div><span class="hl-red">✗</span> <span style="color:var(--red);">rm -rf /</span> or <span style="color:var(--red);">rm -rf /*</span> — destroys everything (use carefully!)</div>
+            <div><span class="hl-red">✗</span> Not taking snapshots/backups before major changes</div>
+            <div><span class="hl-red">✗</span> Copying commands from internet without understanding them</div>
+            <div><span class="hl-red">✗</span> Only reading — you MUST practice in a real terminal daily</div>
+            <div><span class="hl-green">✓</span> Always test changes on a dev/VM before production</div>
+            <div><span class="hl-green">✓</span> Use <span style="color:var(--green);">man [command]</span> to read the manual for any command</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESOURCES PANEL -->
+      <div class="panel" id="panel-resources">
+        <div class="panel-header">
+          <div class="panel-tag">Learning Path</div>
+          <div class="panel-title">Best Free Resources</div>
+          <div class="panel-desc">Curated, battle-tested resources used by real sysadmins and DevOps engineers worldwide.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📚 Documentation & Reference</div>
+          <div class="card-body">
+            <div class="resource-item">
+              <div class="resource-icon">📖</div>
+              <div><div class="resource-name">man pages — built into Linux</div><div class="resource-desc">Type <span style="color:var(--green);">man ls</span>, <span style="color:var(--green);">man grep</span> — the definitive reference for every command. Always available offline.</div></div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-icon">🌐</div>
+              <div><div class="resource-name">linux.die.net / tldr.sh</div><div class="resource-desc">tldr gives practical command examples. Much faster than reading full man pages.</div></div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-icon">📓</div>
+              <div><div class="resource-name">The Linux Command Line — William Shotts</div><div class="resource-desc">Free book at linuxcommand.org — the best beginner-to-intermediate book. Read it cover to cover.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎬 Video Learning</div>
+          <div class="card-body">
+            <div class="resource-item">
+              <div class="resource-icon">▶</div>
+              <div><div class="resource-name">NetworkChuck (YouTube)</div><div class="resource-desc">Engaging Linux/networking videos. Great for beginners. "I'll teach you Linux" series is excellent.</div></div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-icon">▶</div>
+              <div><div class="resource-name">The Linux Foundation (edX)</div><div class="resource-desc">LFS101x "Introduction to Linux" — free audit. Official, comprehensive, certificate available.</div></div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-icon">▶</div>
+              <div><div class="resource-name">TechWorld with Nana (YouTube)</div><div class="resource-desc">Best DevOps + Docker + Kubernetes tutorials. Extremely clear explanations.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🛠️ Practice Platforms</div>
+          <div class="card-body">
+            <div class="resource-item">
+              <div class="resource-icon">💻</div>
+              <div><div class="resource-name">OverTheWire: Bandit</div><div class="resource-desc">Game-style Linux learning. Solve security challenges by learning commands. Free, addictive, brilliant.</div></div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-icon">🎮</div>
+              <div><div class="resource-name">TryHackMe / HackTheBox</div><div class="resource-desc">Linux + security practice in browser-based environments. Real VMs, real challenges.</div></div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-icon">☁️</div>
+              <div><div class="resource-name">AWS Free Tier / DigitalOcean $200 credit</div><div class="resource-desc">Get a real cloud Linux server for free and practice on actual production infrastructure.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🏆 Certifications Roadmap</div>
+          <div class="card-body">
+            <div style="font-size:11px; line-height:2.5;">
+              <div><span class="badge badge-green">Beginner</span> &nbsp;<span class="hl-text">Linux Foundation Certified IT Associate (LFCA)</span></div>
+              <div><span class="badge badge-blue">Intermediate</span> &nbsp;<span class="hl-text">CompTIA Linux+ / LPIC-1</span></div>
+              <div><span class="badge badge-amber">Advanced</span> &nbsp;<span class="hl-text">LPIC-2 / Red Hat RHCSA (RHEL)</span></div>
+              <div><span class="badge badge-purple">Expert</span> &nbsp;<span class="hl-text">RHCE / LFCS (Linux Foundation Certified SysAdmin)</span></div>
+              <div><span class="badge badge-red">DevOps</span> &nbsp;<span class="hl-text">CKA (Certified Kubernetes Administrator)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLAYGROUND PANEL -->
+      <div class="panel" id="panel-playground">
+        <div class="panel-header">
+          <div class="panel-tag">Interactive</div>
+          <div class="panel-title">Command Playground</div>
+          <div class="panel-desc">Simulate Linux commands and see their output. Learn by doing — type a command and see what it does.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎮 Interactive Command Simulator</div>
+          <div class="card-body">
+            <div class="interactive-cmd">
+              <input class="cmd-input" id="playInput" placeholder="Type a command: ls, pwd, whoami, date, uname -a ..." onkeydown="if(event.key==='Enter') runCmd()">
+              <button class="run-btn" onclick="runCmd()">RUN ↵</button>
+            </div>
+            <div class="term-output-box" id="playOutput">Type a command above and press RUN or Enter to see the output...</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">💡 Try These Commands</div>
+          <div class="card-body">
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <button class="run-btn" onclick="setCmd('ls -la')">ls -la</button>
+              <button class="run-btn" onclick="setCmd('pwd')">pwd</button>
+              <button class="run-btn" onclick="setCmd('whoami')">whoami</button>
+              <button class="run-btn" onclick="setCmd('date')">date</button>
+              <button class="run-btn" onclick="setCmd('uname -a')">uname -a</button>
+              <button class="run-btn" onclick="setCmd('df -h')">df -h</button>
+              <button class="run-btn" onclick="setCmd('free -h')">free -h</button>
+              <button class="run-btn" onclick="setCmd('ps aux')">ps aux</button>
+              <button class="run-btn" onclick="setCmd('echo $PATH')">echo $PATH</button>
+              <button class="run-btn" onclick="setCmd('cat /etc/os-release')">cat /etc/os-release</button>
+              <button class="run-btn" onclick="setCmd('uptime')">uptime</button>
+              <button class="run-btn" onclick="setCmd('id')">id</button>
+              <button class="run-btn" onclick="setCmd('env')">env</button>
+              <button class="run-btn" onclick="setCmd('history')">history</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🧠 Linux Quiz — Test All Sections</div>
+          <div class="card-body" id="megaQuiz">
+            <div id="quizContainer"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const panels = document.querySelectorAll('.panel');
+const navItems = document.querySelectorAll('.nav-item');
+
+function showPanel(id) {
+  panels.forEach(p => p.classList.remove('active'));
+  navItems.forEach(n => n.classList.remove('active'));
+  const target = document.getElementById('panel-' + id);
+  if (target) target.classList.add('active');
+  const clicked = [...navItems].find(n => n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + id + "'"));
+  if (clicked) clicked.classList.add('active');
+  document.querySelector('.content-area').scrollTop = 0;
+  if (id === 'playground') initQuiz();
+}
+
+function checkAnswer(btn, correct) {
+  const parent = btn.parentElement;
+  const btns = parent.querySelectorAll('.quiz-opt');
+  btns.forEach(b => b.disabled = true);
+  if (correct) {
+    btn.classList.add('correct');
+    btn.textContent = '✓ ' + btn.textContent + ' — Correct!';
+  } else {
+    btn.classList.add('wrong');
+    btn.textContent = '✗ ' + btn.textContent;
+    btns.forEach(b => { if (b._correct) b.classList.add('correct'); });
+  }
+}
+
+document.querySelectorAll('.quiz-opt').forEach((b, i) => {
+  const parent = b.closest('.checkpoint');
+  const btns = parent ? parent.querySelectorAll('.quiz-opt') : [];
+  btns.forEach(opt => { if (opt.getAttribute('onclick') && opt.getAttribute('onclick').includes('true')) opt._correct = true; });
+});
+
+function showTab(group, id) {
+  const tabs = document.querySelectorAll('.tab');
+  const contents = document.querySelectorAll('.tab-content');
+  const allTabs = document.querySelectorAll('[onclick^="showTab(\'' + group + '\'"]');
+  allTabs.forEach(t => t.classList.remove('active'));
+  const target = document.getElementById(group + '-' + id);
+  if (target) {
+    document.querySelectorAll('[id^="' + group + '-"]').forEach(c => c.classList.remove('active'));
+    target.classList.add('active');
+  }
+  const clickedTab = [...document.querySelectorAll('.tab')].find(t => t.getAttribute('onclick') && t.getAttribute('onclick').includes("'" + id + "'") && t.getAttribute('onclick').includes("'" + group + "'"));
+  if (clickedTab) {
+    const siblingTabs = clickedTab.parentElement.querySelectorAll('.tab');
+    siblingTabs.forEach(t => t.classList.remove('active'));
+    clickedTab.classList.add('active');
+  }
+}
+
+const cmdSims = {
+  'ls': `total 52\ndrwxr-xr-x 8 student student 4096 Jan 10 14:30 .\ndrwxr-xr-x 3 root    root    4096 Jan  1 00:00 ..\n-rw-r--r-- 1 student student  220 Jan  1 00:00 .bash_logout\n-rw-r--r-- 1 student student 3526 Jan  1 00:00 .bashrc\ndrwxr-xr-x 2 student student 4096 Jan 10 09:00 Desktop\ndrwxr-xr-x 3 student student 4096 Jan 10 10:00 Documents\n-rw-r--r-- 1 student student 1024 Jan 10 14:00 notes.txt\n-rwxr-xr-x 1 student student  512 Jan 10 13:00 script.sh`,
+  'ls -la': `total 56\ndrwxr-xr-x 8 student student 4096 Jan 10 14:30 .\ndrwxr-xr-x 3 root    root    4096 Jan  1 00:00 ..\n-rw-r--r-- 1 student student  220 Jan  1 00:00 .bash_logout\n-rw-r--r-- 1 student student 3526 Jan  1 00:00 .bashrc\n-rw------- 1 student student  512 Jan 10 14:25 .bash_history\ndrwxr-xr-x 2 student student 4096 Jan 10 09:00 Desktop\ndrwxr-xr-x 3 student student 4096 Jan 10 10:00 Documents\n-rw-r--r-- 1 student student 1024 Jan 10 14:00 notes.txt\n-rwxr-xr-x 1 student student  512 Jan 10 13:00 script.sh`,
+  'pwd': `/home/student`,
+  'whoami': `student`,
+  'id': `uid=1000(student) gid=1000(student) groups=1000(student),4(adm),27(sudo),1001(docker)`,
+  'date': `Fri Jan 10 14:30:45 IST 2025`,
+  'uptime': ` 14:30:45 up 42 days,  3:21,  2 users,  load average: 0.12, 0.18, 0.20`,
+  'uname -a': `Linux my-linux-machine 6.5.0-41-generic #41-Ubuntu SMP x86_64 GNU/Linux`,
+  'df -h': `Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1        50G   22G   26G  46% /\ntmpfs           3.9G     0  3.9G   0% /dev/shm\n/dev/sdb1       500G  200G  300G  40% /data`,
+  'free -h': `              total        used        free      shared  buff/cache   available\nMem:          7.8Gi       2.1Gi       1.2Gi       256Mi       4.5Gi       5.2Gi\nSwap:         2.0Gi          0B       2.0Gi`,
+  'ps aux': `USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND\nroot         1  0.0  0.1 169744 12004 ?        Ss   Jan01   0:01 /sbin/init\nroot       532  0.0  0.0  47544  6000 ?        Ss   Jan01   0:00 /usr/sbin/sshd\nstudent   2341  2.5  5.0 512444 48000 pts/0    S+   14:00   0:05 python3 app.py\nstudent   2456  0.0  0.1  21352  4000 pts/1    R+   14:30   0:00 ps aux`,
+  'echo $path': `echo $path\n`,
+  'echo $PATH': `/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/home/student/.local/bin`,
+  'history': `    1  sudo apt update\n    2  sudo apt upgrade -y\n    3  ls -la\n    4  cd /var/log\n    5  cat syslog | tail -50\n    6  cd ~\n    7  vim notes.txt\n    8  git clone https://github.com/example/repo\n    9  python3 script.py\n   10  history`,
+  'env': `TERM=xterm-256color\nSHELL=/bin/bash\nUSER=student\nHOME=/home/student\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\nLANG=en_IN.UTF-8\nPWD=/home/student\nSHLVL=1\nOLDPWD=/var/log`,
+  'cat /etc/os-release': `PRETTY_NAME="Ubuntu 22.04.3 LTS"\nNAME="Ubuntu"\nVERSION_ID="22.04"\nVERSION="22.04.3 LTS (Jammy Jellyfish)"\nID=ubuntu\nID_LIKE=debian\nHOME_URL="https://www.ubuntu.com/"\nSUPPORT_URL="https://help.ubuntu.com/"\nBUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"`,
+};
+
+function runCmd() {
+  const input = document.getElementById('playInput');
+  const output = document.getElementById('playOutput');
+  const cmd = input.value.trim();
+  if (!cmd) return;
+  const lc = cmd.toLowerCase();
+  const result = cmdSims[cmd] || cmdSims[lc] || `bash: ${cmd}: command not found\n(This simulator supports: ${Object.keys(cmdSims).join(', ')})`;
+  output.textContent = '$ ' + cmd + '\n' + result;
+  input.value = '';
+}
+
+function setCmd(cmd) {
+  const input = document.getElementById('playInput');
+  if (input) { input.value = cmd; input.focus(); runCmd(); }
+}
+
+const quizBank = [
+  { q: "What command shows your current working directory?", opts: ["ls", "cd", "pwd", "dir"], ans: 2 },
+  { q: "What does chmod 777 mean?", opts: ["Owner-only access", "Read-only for all", "Full access for everyone", "No permissions"], ans: 2 },
+  { q: "Which file contains all system users?", opts: ["/etc/users", "/etc/passwd", "/home/users", "/var/users"], ans: 1 },
+  { q: "What does 'sudo' stand for?", opts: ["Super User Do", "System User Directory", "Sudo User Default", "Switch User Domain"], ans: 0 },
+  { q: "How do you run a process in the background?", opts: ["./script.sh &", "./script.sh bg", "./script.sh -b", "bg ./script.sh"], ans: 0 },
+  { q: "Which directory stores temporary files cleared on reboot?", opts: ["/var", "/tmp", "/dev", "/mnt"], ans: 1 },
+  { q: "What does 'grep -r' do?", opts: ["Replace text", "Recursive search", "Remove files", "Run grep remotely"], ans: 1 },
+  { q: "What is the PID of the init/systemd process?", opts: ["0", "1", "100", "1000"], ans: 1 },
+];
+
+let quizState = { current: 0, score: 0, done: false };
+
+function initQuiz() {
+  quizState = { current: 0, score: 0, done: false };
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const container = document.getElementById('quizContainer');
+  if (!container) return;
+  if (quizState.done) {
+    container.innerHTML = `<div style="text-align:center; padding:20px;"><div style="font-size:32px; color:var(--green); font-family:var(--font-display); font-weight:800;">${quizState.score}/${quizBank.length}</div><div style="color:var(--muted); font-size:12px; margin:8px 0 16px;">${quizState.score >= 6 ? 'Excellent! You have mastered the basics.' : quizState.score >= 4 ? 'Good progress! Keep practicing.' : 'Keep studying — you will get there!'}</div><button class="run-btn" onclick="initQuiz()">Restart Quiz</button></div>`;
+    return;
+  }
+  const q = quizBank[quizState.current];
+  container.innerHTML = `<div style="margin-bottom:12px;"><div style="font-size:10px; color:var(--muted); margin-bottom:6px;">Question ${quizState.current + 1} of ${quizBank.length} · Score: ${quizState.score}</div><div class="progress-bar"><div class="progress-fill" style="width:${((quizState.current)/quizBank.length)*100}%"></div></div></div><div style="font-size:12px; color:var(--text); margin-bottom:12px; line-height:1.6;">${q.q}</div><div style="display:flex; flex-direction:column; gap:6px;">${q.opts.map((o, i) => `<button class="quiz-opt" onclick="answerQuiz(${i}, ${q.ans})">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div>`;
+}
+
+function answerQuiz(chosen, correct) {
+  const btns = document.querySelectorAll('#quizContainer .quiz-opt');
+  btns.forEach(b => b.disabled = true);
+  btns[correct].classList.add('correct');
+  if (chosen !== correct) { btns[chosen].classList.add('wrong'); } else { quizState.score++; }
+  setTimeout(() => {
+    quizState.current++;
+    if (quizState.current >= quizBank.length) quizState.done = true;
+    renderQuiz();
+  }, 1200);
+}
+</script>
